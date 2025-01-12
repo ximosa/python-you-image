@@ -4,6 +4,8 @@ import io
 
 def add_text_to_image(image, text, font_size, font_color, x, y):
     """Añade texto a una imagen con opciones de personalización."""
+    # Convertimos la imagen al modo RGBA
+    image = image.convert("RGBA")
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype("DejaVuSans.ttf", size=font_size)
 
@@ -40,6 +42,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     # Dibuja el fondo oscuro transparente
     draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 128))
 
+
     # Escribe el texto linea por linea centrado
     y_offset = y
     for line in lines:
@@ -47,7 +50,8 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
         text_x = x - line_width // 2  # Centra cada línea
         draw.text((text_x, y_offset), line, fill=font_color, font=font)
         y_offset += text_height
-    return image
+    
+    return image.convert("RGB") # Volvemos la imagen a RGB
 
 def create_thumbnail(uploaded_image, title, font_size, font_color):
     """Crea la miniatura con el texto superpuesto."""
