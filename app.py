@@ -4,7 +4,7 @@ import io
 import math
 
 def add_text_to_image(image, text, font_size, font_color, x, y):
-    """Añade texto a una imagen con opciones de personalización."""
+    """Añade texto a una imagen sin fondo."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
     draw = ImageDraw.Draw(image)
@@ -26,22 +26,6 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
 
     # Calcula la altura total del texto
     total_text_height = len(lines) * text_height
-
-    # Calcula el ancho máximo del texto
-    max_text_width = 0
-    for line in lines:
-        line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
-        max_text_width = max(max_text_width, line_width)
-
-    # Calcula las coordenadas del rectángulo de fondo
-    padding = 20
-    rect_x0 = x - max_text_width // 2 - padding
-    rect_y0 = y - padding
-    rect_x1 = x + max_text_width // 2 + padding
-    rect_y1 = y + total_text_height + padding
-
-    # Dibuja el fondo oscuro transparente
-    draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 150))  # Fondo semitransparente
 
     # Escribe el texto línea por línea centrado con un borde para el grosor
     line_spacing = 15  # Ajusta el espacio entre líneas
