@@ -87,7 +87,7 @@ def create_thumbnail(uploaded_image, title, font_size):
 
             # Oscurece la imagen
             enhancer = ImageEnhance.Brightness(image)
-            image = enhancer.enhance(0.6)
+            image = enhancer.enhance(0.4)  # Aumentamos el oscurecimiento
             
             # Ajusta el tamaño de la fuente según el tamaño de la imagen
             scaled_font_size = int(font_size * math.sqrt(width * height) / math.sqrt(1280 * 720))
@@ -96,7 +96,7 @@ def create_thumbnail(uploaded_image, title, font_size):
             x = width // 2
             y = height // 2 - 30
 
-            thumbnail = add_text_to_image(image, title, scaled_font_size, "#FFFFFF", x, y)
+            thumbnail = add_text_to_image(image, title, scaled_font_size, "#FFFF00", x, y) # Texto amarillo
             return thumbnail
         except Exception as e:
             st.error(f"Error al procesar la imagen: {e}")
