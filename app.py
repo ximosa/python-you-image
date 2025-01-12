@@ -14,32 +14,39 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     for word in words:
         test_line = line + " " + word if line else word
         text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
-        if text_width <= image.width - 200: # Ajusta el margen
+        if text_width <= image.width - 200:  # Ajusta el margen
             line = test_line
         else:
             lines.append(line)
             line = word
     lines.append(line)
-    
+
     # Calcula la altura total del texto
     total_text_height = len(lines) * text_height
-    
-    # Calcula las coordenadas del rectángulo de fondo
-    padding = 10  # Ajusta el padding para que no este pegado al borde
-    rect_x0 = x - padding
-    rect_y0 = y - padding
-    rect_x1 = image.width - x - padding
-    rect_y1 = y + total_text_height + padding
-    
-    # Dibuja el fondo oscuro transparente
-    draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 128))  # Negro con 50% de transparencia
 
-    # Escribe el texto linea por linea
+    # Calcula el ancho máximo del texto
+    max_text_width = 0
+    for line in lines:
+        line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
+        max_text_width = max(max_text_width, line_width)
+
+    # Calcula las coordenadas del rectángulo de fondo
+    padding = 10
+    rect_x0 = x - max_text_width // 2 - padding
+    rect_y0 = y - padding
+    rect_x1 = x + max_text_width // 2 + padding
+    rect_y1 = y + total_text_height + padding
+
+    # Dibuja el fondo oscuro transparente
+    draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 128))
+
+    # Escribe el texto linea por linea centrado
     y_offset = y
     for line in lines:
-        draw.text((x, y_offset), line, fill=font_color, font=font)
-        y_offset += text_height  # Ajusta el espaciado entre lineas
-
+        line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
+        text_x = x - line_width // 2  # Centra cada línea
+        draw.text((text_x, y_offset), line, fill=font_color, font=font)
+        y_offset += text_height
     return image
 
 def create_thumbnail(uploaded_image, title, font_size, font_color):
@@ -51,10 +58,10 @@ def create_thumbnail(uploaded_image, title, font_size, font_color):
 
           # Oscurece la imagen
           enhancer = ImageEnhance.Brightness(image)
-          image = enhancer.enhance(0.6)  # Oscurece la imagen, 0 es negro
+          image = enhancer.enhance(0.6)
 
-          # Ajusta la posición del texto al centro
-          x = width // 2 - 100
+          # Calcula la posición del texto centrada
+          x = width // 2
           y = height // 2 - 30
 
           thumbnail = add_text_to_image(image, title, font_size, font_color, x, y)
