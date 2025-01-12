@@ -58,7 +58,13 @@ def create_thumbnail(uploaded_image, title, font_size):
     """Crea la miniatura con el texto superpuesto."""
     if uploaded_image is not None:
         try:
-            image = Image.open(uploaded_image).convert("RGB")
+            # Abre la imagen con PIL
+            image = Image.open(uploaded_image)
+            
+            # Convierte a RGB si es necesario
+            if image.mode != "RGB":
+              image = image.convert("RGB")
+            
             width, height = image.size
             
             # Redimensiona la imagen a 1280x720 manteniendo las proporciones
@@ -125,7 +131,7 @@ def compress_image(image, max_size_mb):
 
 st.title("Creador de Miniaturas para Videos")
 
-uploaded_image = st.file_uploader("Sube la imagen base:", type=["png", "jpg", "jpeg"])
+uploaded_image = st.file_uploader("Sube la imagen base:") # Elimina el tipo de archivo
 title = st.text_input("Introduce el título:")
 font_size = st.slider("Tamaño de la fuente:", 10, 100, 40)
 max_size_mb = st.number_input("Tamaño maximo de la imagen (MB):", min_value=0.1, max_value=10.0, value=2.0)
@@ -141,7 +147,7 @@ if st.button("Generar miniatura"):
             st.download_button(
                 label="Descargar miniatura",
                 data=img_byte_arr,
-                file_name="miniatura.jpg",
+                file_name="miniatura.jpg", # Forzamos que la imagen se descargue en JPG
                 mime="image/jpeg"
             )
     else:
