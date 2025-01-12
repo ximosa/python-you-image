@@ -5,7 +5,7 @@ import io
 def add_text_to_image(image, text, font_size, font_color, x, y):
     """Añade texto a una imagen con opciones de personalización."""
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype("arial.ttf", size=font_size)  # Aseguramos que arial.ttf exista
+    font = ImageFont.truetype("DejaVuSans.ttf", size=font_size)  # Usamos una fuente segura de Pillow
     draw.text((x, y), text, fill=font_color, font=font)
     return image
 
