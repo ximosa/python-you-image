@@ -34,25 +34,31 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
         max_text_width = max(max_text_width, line_width)
 
     # Calcula las coordenadas del rectángulo de fondo
-    padding = 20 # Aumentamos el padding
+    padding = 20
     rect_x0 = x - max_text_width // 2 - padding
     rect_y0 = y - padding
     rect_x1 = x + max_text_width // 2 + padding
     rect_y1 = y + total_text_height + padding
 
     # Dibuja el fondo oscuro transparente
-    draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 150)) # Aumentamos la transparencia
+    draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 150))  # Fondo semitransparente
 
-    # Escribe el texto linea por linea centrado
-    line_spacing = 15  # Ajusta el espacio entre líneas (aumentamos un poco)
+    # Escribe el texto línea por línea centrado con un borde para el grosor
+    line_spacing = 15  # Ajusta el espacio entre líneas
     y_offset = y
     for line in lines:
         line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
         text_x = x - line_width // 2  # Centra cada línea
-        # Usamos text para dibujar el texto original con su grosor
-        draw.text((text_x, y_offset), line, fill=font_color, font=font)
-        y_offset += text_height + line_spacing  # Añadimos un espaciado extra
         
+        # Borde del texto (grosor)
+        border_color = (0, 0, 0)  # Negro
+        for dx, dy in [(-2, -2), (-2, 2), (2, -2), (2, 2), (-1,0), (1,0), (0,-1), (0,1)]:
+            draw.text((text_x + dx, y_offset + dy), line, font=font, fill=border_color)
+        
+        # Texto principal
+        draw.text((text_x, y_offset), line, fill=font_color, font=font)
+        y_offset += text_height + line_spacing
+
     return image.convert("RGB") # Volvemos la imagen a RGB
 
 def create_thumbnail(uploaded_image, title, font_size):
