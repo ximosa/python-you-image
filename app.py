@@ -44,13 +44,14 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     draw.rectangle((rect_x0, rect_y0, rect_x1, rect_y1), fill=(0, 0, 0, 128))
 
     # Escribe el texto linea por linea centrado
+    line_spacing = 10  # Ajusta el espacio entre líneas
     y_offset = y
     for line in lines:
         line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
         text_x = x - line_width // 2  # Centra cada línea
         draw.text((text_x, y_offset), line, fill=font_color, font=font)
-        y_offset += text_height
-
+        y_offset += text_height + line_spacing  # Añadimos un espaciado extra
+        
     return image.convert("RGB") # Volvemos la imagen a RGB
 
 
@@ -147,7 +148,7 @@ if st.button("Generar miniatura"):
             st.download_button(
                 label="Descargar miniatura",
                 data=img_byte_arr,
-                file_name="miniatura.jpg", # Forzamos que la imagen se descargue en JPG
+                file_name="miniatura.jpg",
                 mime="image/jpeg"
             )
     else:
