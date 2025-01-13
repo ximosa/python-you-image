@@ -3,8 +3,8 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import io
 import math
 
-def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_size):
-    """Añade texto a una imagen con ajuste de línea."""
+def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_size, width):
+    """Añade texto a una imagen con ajuste de línea dinámico."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
     draw = ImageDraw.Draw(image)
@@ -17,7 +17,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_si
     for word in words:
         test_line = line + " " + word if line else word
         text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
-        if text_width <= image.width - 150:  # Mayor espacio para texto ancho (ajustado)
+        if text_width <= width - 150:  # Mayor espacio para texto ancho (ajustado)
             line = test_line
         else:
             lines.append(line)
@@ -96,7 +96,7 @@ def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_positi
             x = int(width * text_x_position_factor)
             y = int(height * text_y_position_factor)
 
-            thumbnail = add_text_to_image(image, title, font_size, font_color, x, y, shadow_offset_size)
+            thumbnail = add_text_to_image(image, title, font_size, font_color, x, y, shadow_offset_size, width)
             return thumbnail
         except Exception as e:
             st.error(f"Error al procesar la imagen: {e}")
@@ -128,6 +128,31 @@ font_color = st.color_picker("Color del texto:", "#D4AC0D")
 max_size_mb = st.number_input("Tamaño maximo de la imagen (MB):", min_value=0.1, max_value=10.0, value=2.0)
 
 if uploaded_image and title:
+    
+  # Get the image
+  image = Image.open(uploaded_image)
+
+  # Redimensiona la imagen a 1280x720 manteniendo las proporciones
+  width, height = image.size
+
+  target_width = 1280
+  target_height = 720
+  image_ratio = width / height
+  target_ratio = target_width / target_height
+
+  if image_ratio > target_ratio:
+      new_height = target_height
+      new_width = int(new_height * image_ratio)
+  else:
+      new_width = target_width
+      new_height = int(new_width / image_ratio)
+
+  image = image.resize((new_width,new_height), Image.Resampling.LANCZOS)
+  
+  
+  width, height = image.size
+
+
   font_size = st.slider("Tamaño de la fuente:", 10, 100, 55)
   shadow_offset_size = st.slider("Grosor del texto:", 0, 10, 2)
   text_x_position_factor = st.slider("Posición Horizontal del texto:", 0.0, 1.0, 0.5)
