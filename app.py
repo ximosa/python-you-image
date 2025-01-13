@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import io
 import math
 
-def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_size, width):
+def add_text_to_image(image, text, font_size, font_color, x, y):
     """Añade texto a una imagen con ajuste de línea dinámico."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
@@ -17,7 +17,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_si
     for word in words:
         test_line = line + " " + word if line else word
         text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
-        if text_width <= width - 150:  # Mayor espacio para texto ancho (ajustado)
+        if text_width <= image.width - 150:  # Mayor espacio para texto ancho (ajustado)
             line = test_line
         else:
             lines.append(line)
@@ -31,7 +31,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_si
     line_spacing = 15  # Ajusta el espacio entre líneas
     y_offset = y
     shadow_color = (0, 0, 0, 100)
-    shadow_offset = (shadow_offset_size, shadow_offset_size)
+    shadow_offset = (2, 2)
     for line in lines:
         line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
         text_x = x - line_width // 2  # Centra cada línea
@@ -46,7 +46,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_si
     return image.convert("RGB")
 
 
-def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_position_factor, text_y_position_factor, shadow_offset_size):
+def create_thumbnail(uploaded_image, title, font_size, font_color):
     """Crea la miniatura con el texto superpuesto."""
     if uploaded_image is not None:
         try:
@@ -93,10 +93,10 @@ def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_positi
             # Ajusta el tamaño de la fuente según el tamaño de la imagen
             
             # Calcula la posición del texto centrada, más arriba
-            x = int(width * text_x_position_factor)
-            y = int(height * text_y_position_factor)
+            x = width // 2
+            y = height // 2 - height // 4
 
-            thumbnail = add_text_to_image(image, title, font_size, font_color, x, y, shadow_offset_size, width)
+            thumbnail = add_text_to_image(image, title, font_size, font_color, x, y)
             return thumbnail
         except Exception as e:
             st.error(f"Error al procesar la imagen: {e}")
@@ -123,42 +123,15 @@ def compress_image(image, max_size_mb):
 st.title("Creador de Miniaturas para Videos")
 
 uploaded_image = st.file_uploader("Sube la imagen base:") # Elimina el tipo de archivo
-title = st.text_input("Introduce el título:")
+title = st.text_area("Introduce el título:", height=150)
 font_color = st.color_picker("Color del texto:", "#D4AC0D")
 max_size_mb = st.number_input("Tamaño maximo de la imagen (MB):", min_value=0.1, max_value=10.0, value=2.0)
 
+
 if uploaded_image and title:
-    
-  # Get the image
-  image = Image.open(uploaded_image)
-
-  # Redimensiona la imagen a 1280x720 manteniendo las proporciones
-  width, height = image.size
-
-  target_width = 1280
-  target_height = 720
-  image_ratio = width / height
-  target_ratio = target_width / target_height
-
-  if image_ratio > target_ratio:
-      new_height = target_height
-      new_width = int(new_height * image_ratio)
-  else:
-      new_width = target_width
-      new_height = int(new_width / image_ratio)
-
-  image = image.resize((new_width,new_height), Image.Resampling.LANCZOS)
-  
-  
-  width, height = image.size
-
-
   font_size = st.slider("Tamaño de la fuente:", 10, 100, 55)
-  shadow_offset_size = st.slider("Grosor del texto:", 0, 10, 2)
-  text_x_position_factor = st.slider("Posición Horizontal del texto:", 0.0, 1.0, 0.5)
-  text_y_position_factor = st.slider("Posición Vertical del texto:", 0.0, 1.0, 0.25)
 
-  thumbnail = create_thumbnail(uploaded_image, title, font_size, font_color, text_x_position_factor, text_y_position_factor, shadow_offset_size)
+  thumbnail = create_thumbnail(uploaded_image, title, font_size, font_color)
   if thumbnail:
     st.image(thumbnail, caption="Previsualización de la miniatura", use_container_width=True)
   
