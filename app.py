@@ -98,32 +98,42 @@ class DraggableText:
             self.drag_start_y = event.y
             self.redraw()
         elif self.resize_corner is not None:
-          bbox = self.canvas.bbox(self.rect)
-          if not bbox:
-            return
-          x1, y1, x2, y2 = bbox
-          if self.resize_corner == 0: # Top left
-            self.x += (event.x - x1)
-            self.y += (event.y - y1)
-          elif self.resize_corner == 1: # Top Right
-            self.y += (event.y - y1)
-          elif self.resize_corner == 2:  # Bottom left
-            self.x += (event.x - x1)
-          elif self.resize_corner == 3: # Bottom right
-            pass
-          
-          text_bbox = self.canvas.create_text((0, 0), text=self.text, font= (self.font_file,self.font_size),fill=self.color) # Usamos la misma fuente que PIL
-          bbox = self.canvas.bbox(text_bbox)
-          self.canvas.delete(text_bbox)
+            bbox = self.canvas.bbox(self.rect)
+            if not bbox:
+                return
+            x1, y1, x2, y2 = bbox
+            new_x = self.x
+            new_y = self.y
+            
+            if self.resize_corner == 0:  # Top Left
+                new_x = self.x + (event.x - x1)
+                new_y = self.y + (event.y - y1)
+                
+            elif self.resize_corner == 1:  # Top Right
+              new_y = self.y + (event.y - y1)
+              
+            elif self.resize_corner == 2:  # Bottom Left
+              new_x = self.x + (event.x - x1)
+              
+            elif self.resize_corner == 3:  # Bottom Right
+              pass
 
-          if bbox:
-            text_width = bbox[2] - bbox[0]
-            text_height = bbox[3] - bbox[1]
-          else:
-            text_width = 100
-            text_height = 50
+            text_bbox = self.canvas.create_text((0, 0), text=self.text, font= (self.font_file,self.font_size),fill=self.color)
+            bbox_text = self.canvas.bbox(text_bbox)
+            self.canvas.delete(text_bbox)
 
-          self.redraw()
+            if bbox_text:
+                text_width = bbox_text[2] - bbox_text[0]
+                text_height = bbox_text[3] - bbox_text[1]
+            else:
+                text_width = 100
+                text_height = 50
+
+            # Calculamos la nueva posicion del texto
+            self.x = new_x
+            self.y = new_y
+
+            self.redraw()
 
     def on_release(self, event):
         """Detiene el arrastre o la redimensión."""
@@ -276,7 +286,7 @@ st.title("Creador de Miniaturas para Videos")
 
 uploaded_image = st.file_uploader("Sube la imagen base:")
 title = st.text_input("Introduce el título:")
-font_size = st.slider("Tamaño de la fuente:", 10, 100, 55, disabled=True)
+font_size = 55 # Establecemos el tamaño de la fuente fijo a 55
 font_color = st.color_picker("Color del texto:", "#D4AC0D")
 max_size_mb = st.number_input("Tamaño maximo de la imagen (MB):", min_value=0.1, max_value=10.0, value=2.0)
 
@@ -286,7 +296,7 @@ if st.button("Abrir editor"):
     with open("temp_image.jpg", "wb") as f:
       f.write(uploaded_image.read())
     
-    create_thumbnail_tkinter("temp_image.jpg", title, 55, font_color, max_size_mb) # Llamamos a tkinter
+    create_thumbnail_tkinter("temp_image.jpg", title, font_size, font_color, max_size_mb) # Llamamos a tkinter
     os.remove("temp_image.jpg")
   else:
     st.warning("Por favor, sube una imagen e introduce un título.")
