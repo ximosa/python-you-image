@@ -35,8 +35,8 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
         text_x = x - line_width // 2  # Centra cada línea
         
         # Borde del texto (grosor)
-        border_color = (0, 0, 0)  # Negro
-        for dx, dy in [(-2, -2), (-2, 2), (2, -2), (2, 2), (-1,0), (1,0), (0,-1), (0,1)]:
+        border_color = (255, 165, 0)  # Naranja (R, G, B)
+        for dx, dy in [(-3, -3), (-3, 0), (-3, 3), (0, -3), (0, 3), (3, -3), (3, 0), (3, 3), (-2,-2), (-2,2), (2,-2), (2,2), (-1,0), (1,0), (0,-1), (0,1)]:
             draw.text((text_x + dx, y_offset + dy), line, font=font, fill=border_color)
         
         # Texto principal
