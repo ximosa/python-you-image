@@ -96,7 +96,7 @@ def create_thumbnail(uploaded_image, title, font_size):
             x = width // 2
             y = height // 2 - 30
 
-            thumbnail = add_text_to_image(image, title, scaled_font_size, "#FFFF00", x, y) # Texto amarillo
+            thumbnail = add_text_to_image(image, title, scaled_font_size, "#D4AC0D", x, y) # Texto amarillo mas oscuro
             return thumbnail
         except Exception as e:
             st.error(f"Error al procesar la imagen: {e}")
