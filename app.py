@@ -4,7 +4,7 @@ import io
 import math
 
 def add_text_to_image(image, text, font_size, font_color, x, y):
-    """Añade texto a una imagen sin fondo."""
+    """Añade texto a una imagen con sombra."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
     draw = ImageDraw.Draw(image)
@@ -27,17 +27,17 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     # Calcula la altura total del texto
     total_text_height = len(lines) * text_height
 
-    # Escribe el texto línea por línea centrado con un borde para el grosor
+    # Escribe el texto línea por línea centrado con sombra
     line_spacing = 15  # Ajusta el espacio entre líneas
     y_offset = y
+    shadow_color = (0, 0, 0, 100) # Color negro casi transparente para la sombra
+    shadow_offset = (3, 3) # Desplazamiento de la sombra
     for line in lines:
         line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
         text_x = x - line_width // 2  # Centra cada línea
         
-        # Borde del texto (grosor)
-        border_color = (255, 255, 255)  # Blanco (R, G, B)
-        for dx, dy in [(-3, -3), (-3, 0), (-3, 3), (0, -3), (0, 3), (3, -3), (3, 0), (3, 3), (-2,-2), (-2,2), (2,-2), (2,2), (-1,-1), (-1,1), (1,-1), (1,1), (-1,0), (1,0), (0,-1), (0,1)]:
-            draw.text((text_x + dx, y_offset + dy), line, font=font, fill=border_color)
+        # Sombra del texto
+        draw.text((text_x + shadow_offset[0], y_offset + shadow_offset[1]), line, font=font, fill=shadow_color)
         
         # Texto principal
         draw.text((text_x, y_offset), line, fill=font_color, font=font)
