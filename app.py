@@ -4,7 +4,7 @@ import io
 import math
 
 def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_size):
-    """Añade texto a una imagen con sombra y lo hace más ancho."""
+    """Añade texto a una imagen con ajuste de línea."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
     draw = ImageDraw.Draw(image)
@@ -44,6 +44,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_si
         y_offset += text_height + line_spacing
 
     return image.convert("RGB")
+
 
 def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_position_factor, text_y_position_factor, shadow_offset_size):
     """Crea la miniatura con el texto superpuesto."""
