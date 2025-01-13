@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 import io
 import math
 
-def add_text_to_image(image, text, font_size, font_color, x, y):
+def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_size):
     """Añade texto a una imagen con sombra y lo hace más ancho."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
@@ -31,7 +31,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     line_spacing = 15  # Ajusta el espacio entre líneas
     y_offset = y
     shadow_color = (0, 0, 0, 100)
-    shadow_offset = (3, 3)
+    shadow_offset = (shadow_offset_size, shadow_offset_size)
     for line in lines:
         line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
         text_x = x - line_width // 2  # Centra cada línea
@@ -45,7 +45,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
 
     return image.convert("RGB")
 
-def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_position_factor, text_y_position_factor):
+def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_position_factor, text_y_position_factor, shadow_offset_size):
     """Crea la miniatura con el texto superpuesto."""
     if uploaded_image is not None:
         try:
@@ -90,13 +90,12 @@ def create_thumbnail(uploaded_image, title, font_size, font_color, text_x_positi
             image = enhancer.enhance(0.4)  # Aumentamos el oscurecimiento
             
             # Ajusta el tamaño de la fuente según el tamaño de la imagen
-            scaled_font_size = 55  # tamaño de fuente fijo
             
             # Calcula la posición del texto centrada, más arriba
             x = int(width * text_x_position_factor)
             y = int(height * text_y_position_factor)
 
-            thumbnail = add_text_to_image(image, title, scaled_font_size, font_color, x, y) # Texto amarillo mas oscuro
+            thumbnail = add_text_to_image(image, title, font_size, font_color, x, y, shadow_offset_size)
             return thumbnail
         except Exception as e:
             st.error(f"Error al procesar la imagen: {e}")
@@ -128,10 +127,12 @@ font_color = st.color_picker("Color del texto:", "#D4AC0D")
 max_size_mb = st.number_input("Tamaño maximo de la imagen (MB):", min_value=0.1, max_value=10.0, value=2.0)
 
 if uploaded_image and title:
+  font_size = st.slider("Tamaño de la fuente:", 10, 100, 55)
+  shadow_offset_size = st.slider("Grosor del texto:", 0, 10, 2)
   text_x_position_factor = st.slider("Posición Horizontal del texto:", 0.0, 1.0, 0.5)
   text_y_position_factor = st.slider("Posición Vertical del texto:", 0.0, 1.0, 0.25)
 
-  thumbnail = create_thumbnail(uploaded_image, title, 55, font_color, text_x_position_factor, text_y_position_factor)
+  thumbnail = create_thumbnail(uploaded_image, title, font_size, font_color, text_x_position_factor, text_y_position_factor, shadow_offset_size)
   if thumbnail:
     st.image(thumbnail, caption="Previsualización de la miniatura", use_container_width=True)
   
