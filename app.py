@@ -126,23 +126,25 @@ uploaded_image = st.file_uploader("Sube la imagen base:") # Elimina el tipo de a
 title = st.text_input("Introduce el título:")
 font_color = st.color_picker("Color del texto:", "#D4AC0D")
 max_size_mb = st.number_input("Tamaño maximo de la imagen (MB):", min_value=0.1, max_value=10.0, value=2.0)
-text_x_position_factor = st.slider("Posición Horizontal del texto:", 0.0, 1.0, 0.5)
-text_y_position_factor = st.slider("Posición Vertical del texto:", 0.0, 1.0, 0.25)
 
+if uploaded_image and title:
+  text_x_position_factor = st.slider("Posición Horizontal del texto:", 0.0, 1.0, 0.5)
+  text_y_position_factor = st.slider("Posición Vertical del texto:", 0.0, 1.0, 0.25)
 
-if st.button("Generar miniatura"):
-    if uploaded_image and title:
-        thumbnail = create_thumbnail(uploaded_image, title, 55, font_color, text_x_position_factor, text_y_position_factor)
-        if thumbnail:
-            st.image(thumbnail, caption="Miniatura generada", use_container_width=True)
+  thumbnail = create_thumbnail(uploaded_image, title, 55, font_color, text_x_position_factor, text_y_position_factor)
+  if thumbnail:
+    st.image(thumbnail, caption="Previsualización de la miniatura", use_container_width=True)
+  
+    if st.button("Descargar miniatura"):
+        
+        # Comprime y descarga la imagen
+        img_byte_arr = compress_image(thumbnail, max_size_mb)
+        st.download_button(
+            label="Descargar miniatura",
+            data=img_byte_arr,
+            file_name="miniatura.jpg",
+            mime="image/jpeg"
+        )
 
-            # Comprime y descarga la imagen
-            img_byte_arr = compress_image(thumbnail, max_size_mb)
-            st.download_button(
-                label="Descargar miniatura",
-                data=img_byte_arr,
-                file_name="miniatura.jpg",
-                mime="image/jpeg"
-            )
-    else:
-        st.warning("Por favor, sube una imagen e introduce un título.")
+else:
+  st.warning("Por favor, sube una imagen e introduce un título.")
