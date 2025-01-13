@@ -4,20 +4,20 @@ import io
 import math
 
 def add_text_to_image(image, text, font_size, font_color, x, y):
-    """Añade texto a una imagen con sombra."""
+    """Añade texto a una imagen con sombra y lo hace más ancho."""
     # Convertimos la imagen al modo RGBA
     image = image.convert("RGBA")
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype("DejaVuSans.ttf", size=font_size)
 
-    # Divide el texto en líneas si es demasiado largo
+    # Divide el texto en líneas, priorizando el ancho
     lines = []
     line = ""
     words = text.split()
     for word in words:
         test_line = line + " " + word if line else word
         text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
-        if text_width <= image.width - 200:  # Ajusta el margen
+        if text_width <= image.width - 150:  # Mayor espacio para texto ancho (ajustado)
             line = test_line
         else:
             lines.append(line)
@@ -30,8 +30,8 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     # Escribe el texto línea por línea centrado con sombra
     line_spacing = 15  # Ajusta el espacio entre líneas
     y_offset = y
-    shadow_color = (0, 0, 0, 100) # Color negro casi transparente para la sombra
-    shadow_offset = (3, 3) # Desplazamiento de la sombra
+    shadow_color = (0, 0, 0, 100)
+    shadow_offset = (3, 3)
     for line in lines:
         line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
         text_x = x - line_width // 2  # Centra cada línea
@@ -43,7 +43,7 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
         draw.text((text_x, y_offset), line, fill=font_color, font=font)
         y_offset += text_height + line_spacing
 
-    return image.convert("RGB") # Volvemos la imagen a RGB
+    return image.convert("RGB")
 
 def create_thumbnail(uploaded_image, title, font_size):
     """Crea la miniatura con el texto superpuesto."""
@@ -92,9 +92,10 @@ def create_thumbnail(uploaded_image, title, font_size):
             # Ajusta el tamaño de la fuente según el tamaño de la imagen
             scaled_font_size = int(font_size * math.sqrt(width * height) / math.sqrt(1280 * 720))
             
-            # Calcula la posición del texto centrada
+             # Calcula la posición del texto centrada, más arriba
             x = width // 2
-            y = height // 2 - 30
+            y = height // 2 - height // 4 # Ajustamos la posición del texto más arriba
+          
 
             thumbnail = add_text_to_image(image, title, scaled_font_size, "#D4AC0D", x, y) # Texto amarillo mas oscuro
             return thumbnail
