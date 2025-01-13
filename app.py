@@ -10,39 +10,38 @@ def add_text_to_image(image, text, font_size, font_color, x, y):
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype("DejaVuSans.ttf", size=font_size)
 
-    # Divide el texto en líneas, priorizando el ancho
-    lines = []
-    line = ""
-    words = text.split()
-    for word in words:
-        test_line = line + " " + word if line else word
-        text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
-        if text_width <= image.width - 150:  # Mayor espacio para texto ancho (ajustado)
-            line = test_line
-        else:
-            lines.append(line)
-            line = word
-    lines.append(line)
-
-    # Calcula la altura total del texto
-    total_text_height = len(lines) * text_height
-
-    # Escribe el texto línea por línea centrado con sombra
-    line_spacing = 15  # Ajusta el espacio entre líneas
     y_offset = y
     shadow_color = (0, 0, 0, 100)
     shadow_offset = (2, 2)
-    for line in lines:
-        line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
-        text_x = x - line_width // 2  # Centra cada línea
-        
-        # Sombra del texto
-        draw.text((text_x + shadow_offset[0], y_offset + shadow_offset[1]), line, font=font, fill=shadow_color)
-        
-        # Texto principal
-        draw.text((text_x, y_offset), line, fill=font_color, font=font)
-        y_offset += text_height + line_spacing
+    line_spacing = 15  # Ajusta el espacio entre líneas
 
+    for line_text in text.splitlines():
+        # Divide el texto en líneas, priorizando el ancho
+        lines = []
+        line = ""
+        words = line_text.split()
+        for word in words:
+            test_line = line + " " + word if line else word
+            text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
+            if text_width <= image.width - 150:  # Mayor espacio para texto ancho (ajustado)
+                line = test_line
+            else:
+                lines.append(line)
+                line = word
+        lines.append(line)
+        
+         # Escribe el texto línea por línea centrado con sombra
+        for line in lines:
+            line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
+            text_x = x - line_width // 2  # Centra cada línea
+            
+            # Sombra del texto
+            draw.text((text_x + shadow_offset[0], y_offset + shadow_offset[1]), line, font=font, fill=shadow_color)
+            
+            # Texto principal
+            draw.text((text_x, y_offset), line, fill=font_color, font=font)
+            y_offset += text_height + line_spacing
+            
     return image.convert("RGB")
 
 
