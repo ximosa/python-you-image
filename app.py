@@ -6,8 +6,6 @@ st.set_page_config(
     page_title="mini-youtube",
     layout="wide"
 )
-
-st.title("mini-youtube")
 def add_text_to_image(image, text, font_size, font_color, x, y, shadow_offset_size):
     """Añade texto a una imagen con ajuste de línea dinámico."""
     # Convertimos la imagen al modo RGBA
