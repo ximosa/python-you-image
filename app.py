@@ -9,15 +9,7 @@ st.set_page_config(
 )
 
 def add_rich_text_to_image(image, text_configs, x, y, shadow_offset_size):
-    """Añade texto formateado (múltiples colores, tamaños) a una imagen."""
-    # Convertimos la imagen al modo RGBA
-    image = image.convert("RGBA")
-    draw = ImageDraw.Draw(image)
-    shadow_color = (0, 0, 0, 100)
-    shadow_offset = (shadow_offset_size, shadow_offset_size)
-    line_spacing = 15
-    y_offset = y
-
+    # ... (código anterior) ...
     for line_config in text_configs:
         line_text = line_config["text"]
         font_size = line_config["font_size"]
@@ -28,26 +20,30 @@ def add_rich_text_to_image(image, text_configs, x, y, shadow_offset_size):
         line = ""
         words = line_text.split()
 
-        for word in words:
-            test_line = line + " " + word if line else word
-            text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
-            if text_width <= image.width - 150:
-                line = test_line
-            else:
-                lines.append(line)
-                line = word
-        lines.append(line)
+        # Verifica si hay texto que procesar
+        if line_text:  # Agrega esta condición
+            for word in words:
+                test_line = line + " " + word if line else word
+                text_width, text_height = draw.textbbox((0, 0), test_line, font=font)[2:]
+                if text_width <= image.width - 150:
+                    line = test_line
+                else:
+                    lines.append(line)
+                    line = word
+            lines.append(line)
 
-        for line in lines:
-            line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
-            text_x = x - line_width // 2
+            for line in lines:
+                line_width, _ = draw.textbbox((0, 0), line, font=font)[2:]
+                text_x = x - line_width // 2
 
-            # Sombra
-            draw.text((text_x + shadow_offset[0], y_offset + shadow_offset[1]), line, font=font, fill=shadow_color)
+                # Sombra
+                draw.text((text_x + shadow_offset[0], y_offset + shadow_offset[1]), line, font=font, fill=shadow_color)
 
-            # Texto
-            draw.text((text_x, y_offset), line, fill=font_color, font=font)
-            y_offset += text_height + line_spacing
+                # Texto
+                draw.text((text_x, y_offset), line, fill=font_color, font=font)
+                y_offset += text_height + line_spacing
+        else:
+            text_height = 0  # Define text_height si no hay texto
 
     return image.convert("RGB")
 
