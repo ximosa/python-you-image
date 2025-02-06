@@ -137,7 +137,7 @@ if st.session_state['uploaded_image'] is not None:
 
     for i in range(num_text_parts):
         st.subheader(f"Parte del texto {i+1}")
-        text = st.text_area(f"Texto {i+1}:", height=50)
+        text = st.text_area(f"Texto {i+1}:", height=100)
         font_size = st.slider(f"Tamaño de la fuente {i+1}:", 10, 100, 55)
         font_color = st.color_picker(f"Color del texto {i+1}:", "#D4AC0D")
         text_configs.append({"text": text, "font_size": font_size, "font_color": font_color})
